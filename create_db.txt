@@ -64,7 +64,7 @@ CREATE TABLE OrderItem (
     FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
 );
 
--- Review table
+
 CREATE TABLE Review (
     ReviewID INT PRIMARY KEY,
     ProductID INT,
@@ -76,7 +76,6 @@ CREATE TABLE Review (
     FOREIGN KEY (ConsumerID) REFERENCES Consumer(ConsumerID)
 );
 
--- Message table
 CREATE TABLE Message (
     MessageID INT PRIMARY KEY,
     SenderID INT,
@@ -87,7 +86,7 @@ CREATE TABLE Message (
     FOREIGN KEY (ReceiverID) REFERENCES User(UserID)
 );
 
--- Payment table
+
 CREATE TABLE Payment (
     PaymentID INT PRIMARY KEY,
     OrderID INT,
