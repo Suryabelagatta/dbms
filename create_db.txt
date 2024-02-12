@@ -1,0 +1,99 @@
+-- User table
+CREATE TABLE User (
+    UserID INT PRIMARY KEY,
+    Username VARCHAR(50) UNIQUE,
+    Password VARCHAR(255),
+    Email VARCHAR(100),
+    UserType ENUM('Farmer', 'Consumer'),
+    RegistrationDate DATE,
+    -- Add other attributes as needed
+    CONSTRAINT chk_UserType CHECK (UserType IN ('Farmer', 'Consumer'))
+);
+
+-- Farmer table
+CREATE TABLE Farmer (
+    FarmerID INT PRIMARY KEY,
+    UserID INT UNIQUE,
+    FarmName VARCHAR(50),
+    Location VARCHAR(255),
+    ContactInfo VARCHAR(15),
+    Description TEXT,
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+);
+
+-- Product table
+CREATE TABLE Product (
+    ProductID INT PRIMARY KEY,
+    FarmerID INT,
+    ProductName VARCHAR(50),
+    Description TEXT,
+    Price DECIMAL(10, 2),
+    QuantityAvailable INT,
+    Images VARCHAR(255), -- Assuming a path to images
+    FOREIGN KEY (FarmerID) REFERENCES Farmer(FarmerID)
+);
+
+-- Consumer table
+CREATE TABLE Consumer (
+    ConsumerID INT PRIMARY KEY,
+    UserID INT UNIQUE,
+    FullName VARCHAR(100),
+    Address VARCHAR(255),
+    ContactInfo VARCHAR(15),
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+);
+
+-- Order table
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    ConsumerID INT,
+    OrderDate DATE,
+    TotalAmount DECIMAL(10, 2),
+    OrderStatus VARCHAR(20),
+    FOREIGN KEY (ConsumerID) REFERENCES Consumer(ConsumerID)
+);
+
+-- OrderItem table
+CREATE TABLE OrderItem (
+    OrderItemID INT PRIMARY KEY,
+    OrderID INT,
+    ProductID INT,
+    Quantity INT,
+    Subtotal DECIMAL(10, 2),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+);
+
+-- Review table
+CREATE TABLE Review (
+    ReviewID INT PRIMARY KEY,
+    ProductID INT,
+    ConsumerID INT,
+    Rating INT,
+    Comments TEXT,
+    Timestamp TIMESTAMP,
+    FOREIGN KEY (ProductID) REFERENCES Product(ProductID),
+    FOREIGN KEY (ConsumerID) REFERENCES Consumer(ConsumerID)
+);
+
+-- Message table
+CREATE TABLE Message (
+    MessageID INT PRIMARY KEY,
+    SenderID INT,
+    ReceiverID INT,
+    Content TEXT,
+    Timestamp TIMESTAMP,
+    FOREIGN KEY (SenderID) REFERENCES User(UserID),
+    FOREIGN KEY (ReceiverID) REFERENCES User(UserID)
+);
+
+-- Payment table
+CREATE TABLE Payment (
+    PaymentID INT PRIMARY KEY,
+    OrderID INT,
+    Amount DECIMAL(10, 2),
+    PaymentMethod VARCHAR(50),
+    TransactionStatus VARCHAR(20),
+    Timestamp TIMESTAMP,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+);
