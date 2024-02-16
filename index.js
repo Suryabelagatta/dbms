@@ -1,27 +1,32 @@
-// Import the MySQL connection pool
-const pool = require('./connectiondb'); // Assuming db.js is in the same directory
-const express = require('express');
-const bodyParser =require('body-parser');
-var app=express();
-const port=3000;
-// Middleware for parsing JSON requests
+const express = require('express'); 
+const bodyParser = require('body-parser'); //to access the variables of the html file
+const path = require('path'); //to get the path of static files
+const pool = require('./connectiondb.js'); // Import the connection pool from connectiondb.js
+
+const app = express();
+const port = 3000;
+
 app.use(bodyParser.json());
 
-// API endpoint for validating username and password
-app.post('/', async (req, res) => {
-  const { username, password } = req.body;
+app.use(express.static(path.join(__dirname, 'static_files')));
 
+app.post('/validate', async (req, res) => {
   try {
-    // Get connection from pool
-    const connection = await pool.getConnection();
+    const { username, password } = req.body;
 
-    // Query to fetch user from database based on provided username and password
-    const [rows] = await connection.execute('SELECT * FROM user WHERE username = ? AND password = ?', [username, password]);
+    if (!username || !password) {
+      return res.json({ success: false, message: 'Username or password is missing' });
+    }
 
-    // Release the connection
-    connection.release();
+    // Call the getUsers function to retrieve user information from the database
+    const rows = await getUsers(username, password);
 
-    if (rows.length > 0) {
+    // If no user found with the provided username and password
+    if (!rows || rows.length === 0) {
+      return res.json({ valid: false});
+    }
+
+    if (rows[0].Password==password) {
       res.json({ valid: true });
     } else {
       res.json({ valid: false });
@@ -31,8 +36,21 @@ app.post('/', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+// Define the getUsers function
+async function getUsers(username, password) {
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.execute('SELECT Username, Password FROM User WHERE Username = ? AND Password = ?;', [username, password]);
+    connection.release();
+    return rows;
+  } catch (error) {
+    console.error('Error executing SQL query:', error);
+    throw error;
+  }
+}
+
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+    console.log(`Server running on port ${port}`);
+  });

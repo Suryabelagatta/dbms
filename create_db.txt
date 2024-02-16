@@ -96,3 +96,9 @@ CREATE TABLE Payment (
     Timestamp TIMESTAMP,
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
 );
+
+-- inserting into user TABLE
+INSERT INTO User (UserID, Username, Password, Email, UserType, RegistrationDate) VALUES
+(101, 'farmer1', 'password1', 'john@example.com', 'Farmer', '2023-01-15'),
+(102, 'farmer2', 'password2', 'mary@example.com', 'Farmer', '2023-02-20'),
+(103, 'consumer1', 'password3', 'jane@example.com', 'Consumer', '2023-03-25');
