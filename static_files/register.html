@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="registerApp">
+<head>
+<meta charset="UTF-8">
+<title>User Registration</title>
+<link rel="stylesheet" href="register.css">
+</head>
+<body ng-controller="registerController">
+
+<div class="registration-container">
+    <h2>User Registration</h2>
+    <form ng-submit="submitForm()">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" ng-model="formData.username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" ng-model="formData.password" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" ng-model="formData.email" required>
+        </div>
+        <div class="form-group">
+            <label>User Type:</label><br>
+            <input type="radio" id="farmer" name="userType" ng-model="formData.userType" value="farmer" required>
+            <label for="farmer">Farmer</label><br>
+            <input type="radio" id="consumer" name="userType" ng-model="formData.userType" value="consumer" required>
+            <label for="customer">Consumer</label>
+        </div>
+        <button type="submit">Register</button>
+    </form>
+    <div class="message" ng-show="message">{{ message }}</div>
+</div>
+
+<!-- AngularJS script -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="register.js"></script>
+</body>
+</html>
