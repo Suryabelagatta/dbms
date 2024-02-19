@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="registerApp">
+<html lang="en" ng-app="registerApp" >
 <head>
 <meta charset="UTF-8">
 <title>User Registration</title>
@@ -27,8 +27,31 @@
             <input type="radio" id="farmer" name="userType" ng-model="formData.userType" value="farmer" required>
             <label for="farmer">Farmer</label><br>
             <input type="radio" id="consumer" name="userType" ng-model="formData.userType" value="consumer" required>
-            <label for="customer">Consumer</label>
+            <label for="consumer">Consumer</label>
         </div>
+        
+        <!-- Additional inputs for farmer -->
+        <div class="form-group" ng-if="formData.userType === 'farmer'">
+            <label for="farmerName">Farmer Name:</label>
+            <input type="text" id="farmerName" name="farmerName" ng-model="formData.farmerName">
+            <label for="farmerLocation">Location:</label>
+            <input type="text" id="farmerLocation" name="farmerLocation" ng-model="formData.farmerLocation">
+            <label for="farmerContactInfo">Contact Info:</label>
+            <input type="text" id="farmerContactInfo" name="farmerContactInfo" ng-model="formData.farmerContactInfo">
+            <label for="farmerDescription">Description:</label>
+            <input type="text" id="farmerDescription" name="farmerDescription" ng-model="formData.farmerDescription">
+        </div>
+        
+        <!-- Additional inputs for consumer -->
+        <div class="form-group" ng-if="formData.userType === 'consumer'">
+            <label for="consumerName">Consumer Name:</label>
+            <input type="text" id="consumerName" name="consumerName" ng-model="formData.consumerName" >
+            <label for="consumerAddress">Address:</label>
+            <input type="text" id="consumerAddress" name="consumerAddress" ng-model="formData.consumerAddress">
+            <label for="consumerContactInfo">Contact Info:</label>
+            <input type="text" id="consumerContactInfo" name="consumerContactInfo" ng-model="formData.consumerContactInfo">
+        </div>
+        
         <button type="submit">Register</button>
     </form>
     <div class="message" ng-show="message">{{ message }}</div>

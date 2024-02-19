@@ -52,16 +52,34 @@ app.post('/register', async (req, res) => {
   try {
       const { username, password, email, userType } = req.body;
       // Call the insertUser function with provided details
+
       console.log([ username, password, email, userType]);
-      await insertUser(username, password, email, userType);
-      res.status(200).json({ success: true, message: 'User registered successfully' });
+      try{
+        const connection = await pool.getConnection();
+
+        await insertUser(username, password, email, userType, connection);
+
+      if(userType=='farmer'){
+        const{farmerName,farmerLocation,farmerContactInfo,farmerDescription}=req.body;
+        await insertFarmer(username,farmerName, farmerLocation, farmerContactInfo, farmerDescription,connection);
+      }
+      else if(userType=='consumer'){
+        const{consumerName,consumerAddress,consumerContactInfo}=req.body;
+        await insertConsumer(username,consumerName, consumerAddress, consumerContactInfo,connection);
+      }
+      connection.release();
+      } catch (error) {
+      console.error('Error inserting consumer:', error);
+      throw error;
+  }
+      res.json({ success: true, message: 'User registered successfully' });
   } catch (error) {
       console.error('Error registering user:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 
-async function insertUser(username, password, email,userType) {
+async function insertUser(username, password, email,userType,connection) {
   const today = new Date();
 
   // Extract year, month, and day from the date
@@ -71,15 +89,12 @@ async function insertUser(username, password, email,userType) {
   
   // Concatenate the year, month, and day with hyphens
   const currentDate = `${year}-${month}-${day}`;
-  let connection;
   try {
-      // Get a connection from the pool
-      connection = await pool.getConnection();
-
       // Perform the SQL query to insert user details into the database
       const [rows, fields] = await connection.execute('INSERT INTO user (username, password, email,userType,RegistrationDate) VALUES (?, ?, ?,?,?)',[username, password, email,userType,currentDate]);
 
       console.log('User inserted successfully');
+
   } catch (error) {
       console.error('Error inserting user:', error);
   } finally {
@@ -90,8 +105,35 @@ async function insertUser(username, password, email,userType) {
   }
 }
 
+async function insertFarmer(username,fullname, location, contactinfo, description,connection) {
+  try {
+    const [ids]=await connection.execute('SELECT UserID FROM User WHERE username = ?;',[username]);
+    const UserID=ids[0].UserID;
+      console.log([UserID,username,fullname,location,contactinfo,description]);
+      const [rows] = await connection.execute('INSERT INTO farmer (FarmerID,UserID,Farmname, location, contactInfo, description) VALUES (?,?,?, ?, ?, ?)', [UserID,UserID,fullname, location, contactinfo, description]);
+      return rows;
+  } catch (error) {
+      console.error('Error inserting farmer:', error);
+      throw error;
+  }
+}
+
+// Function to insert data for consumer
+async function insertConsumer(username,fullname, address, contactinfo,connection) {
+  try {
+      const [ids]=await connection.execute('SELECT UserID FROM User WHERE username = ?;',[username]);
+      const UserID=ids[0].UserID;
+      const [rows] = await connection.execute('INSERT INTO consumer (ConsumerID,UserID,fullname, address, contactinfo) VALUES ( ?, ?, ?, ?, ?);', [UserID,UserID,fullname, address, contactinfo]);
+      return rows;
+  } catch (error) {
+      console.error('Error inserting consumer:', error);
+      throw error;
+  }
+}
+
+
 // Define the getUsers function
-async function getUsers(username, password) {
+async function getUsers(username, password,connection) {
   try {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute('SELECT Username, Password FROM User WHERE Username = ? AND Password = ?;', [username, password]);
