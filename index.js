@@ -79,6 +79,47 @@ app.post('/register', async (req, res) => {
   }
 });
 
+app.get('/api/products', (req, res) => {
+  res.sendFile(path.join(__dirname,'static_files','product.html'));
+});
+
+
+
+app.get('/api/products/:id', async (req, res) => {
+  const productId = parseInt(req.params.id);
+  try {
+    // Call the asynchronous getProductById function to retrieve product details
+    const product = await getProductById(productId);
+
+    // Send the retrieved product details to the frontend
+    res.json(product);
+  } catch (error) {
+    // Handle errors
+    res.json({ error: error.message });
+  }
+});
+
+
+
+async function getProductById(productId) {
+  try {
+      const connection = await pool.getConnection();
+      const result = await connection.execute('SELECT * FROM product WHERE productId = ?', [productId]);
+      connection.release();
+
+      // Check if product with given ID exists
+      if (result.length > 0) {
+          return result[0]; // Return the first row (assuming ID is unique)
+      } else {
+          throw new Error('Product not found');
+      }
+  } catch (error) {
+      throw new Error('Error retrieving product details: ' + error.message);
+  }
+}
+
+
+
 async function insertUser(username, password, email,userType,connection) {
   const today = new Date();
 
