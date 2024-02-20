@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="productApp">
+<head>
+<meta charset="UTF-8">
+<title>Product Page</title>
+<link rel="stylesheet" href="product.css">
+</head>
+<body ng-controller="productController">
+
+<div class="product-container">
+    <div class="product" ng-repeat="product in products">
+        <img ng-src="{{ product.Images }}" alt="{{ product.ProductName }}">
+        <h3>{{ product.ProductName }}</h3>
+        <p>{{ product.Description }}</p>
+        <button ng-click="redirectToDetails(product.ProductID)">Details</button>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="product.js"></script>
+</body>
+</html>

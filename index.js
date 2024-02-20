@@ -44,7 +44,7 @@ app.post('/validate', async (req, res) => {
 
 // Set up route for the root path '/'
 app.get('/register', (req, res) => {
-  res.sendFile(path.join(__dirname, 'static_files', 'register.html'));
+  res.sendFile(path.join(__dirname,'static_files', 'register.html'));
 });
 
 // Express route to handle registration
@@ -78,6 +78,38 @@ app.post('/register', async (req, res) => {
       res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
+// Update the route to /api/products
+app.get('/products', async (req, res) => {
+  try {
+    // Call the asynchronous getAllProducts function to retrieve all products
+    const products = await getAllProducts();
+
+    // Send the retrieved products to the frontend
+    res.json(products[0]);
+  } catch (error) {
+    // Handle errors
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+// Function to retrieve all products asynchronously
+async function getAllProducts() {
+  try {
+      const connection = await pool.getConnection();
+      const result = await connection.execute('SELECT ProductID,ProductName,Description,Images FROM product');
+      connection.release();
+      console.log(result);
+      // Return all products
+      return result;
+      
+  } catch (error) {
+      throw new Error('Error retrieving products: ' + error.message);
+  }
+}
+
+
 
 async function insertUser(username, password, email,userType,connection) {
   const today = new Date();
