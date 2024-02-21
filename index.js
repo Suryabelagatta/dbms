@@ -15,6 +15,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'static_files', 'index.html'));
 });
 
+app.get('/consumer', (req, res) => {
+  res.sendFile(path.join(__dirname, 'static_files', 'product.html'));
+});
+
 app.post('/validate', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -32,7 +36,7 @@ app.post('/validate', async (req, res) => {
     }
 
     if (rows[0].Password==password) {
-      res.json({ valid: true });
+      res.json({ valid: true, UserType:rows[0].UserType});
     } else {
       res.json({ valid: false });
     }
@@ -44,7 +48,7 @@ app.post('/validate', async (req, res) => {
 
 // Set up route for the root path '/'
 app.get('/register', (req, res) => {
-  res.sendFile(path.join(__dirname, 'static_files', 'register.html'));
+  res.sendFile(path.join(__dirname,'static_files', 'register.html'));
 });
 
 // Express route to handle registration
@@ -79,42 +83,33 @@ app.post('/register', async (req, res) => {
   }
 });
 
-app.get('/api/products', (req, res) => {
-  res.sendFile(path.join(__dirname,'static_files','product.html'));
-});
-
-
-
-app.get('/api/products/:id', async (req, res) => {
-  const productId = parseInt(req.params.id);
+// Update the route to /api/products
+app.get('/products', async (req, res) => {
   try {
-    // Call the asynchronous getProductById function to retrieve product details
-    const product = await getProductById(productId);
+    // Call the asynchronous getAllProducts function to retrieve all products
+    const products = await getAllProducts();
 
-    // Send the retrieved product details to the frontend
-    res.json(product);
+    // Send the retrieved products to the frontend
+    res.json(products[0]);
   } catch (error) {
     // Handle errors
-    res.json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
 
-
-async function getProductById(productId) {
+// Function to retrieve all products asynchronously
+async function getAllProducts() {
   try {
       const connection = await pool.getConnection();
-      const result = await connection.execute('SELECT * FROM product WHERE productId = ?', [productId]);
+      const result = await connection.execute('SELECT ProductID,ProductName,Description,Images FROM product');
       connection.release();
-
-      // Check if product with given ID exists
-      if (result.length > 0) {
-          return result[0]; // Return the first row (assuming ID is unique)
-      } else {
-          throw new Error('Product not found');
-      }
+      console.log(result);
+      // Return all products
+      return result;
+      
   } catch (error) {
-      throw new Error('Error retrieving product details: ' + error.message);
+      throw new Error('Error retrieving products: ' + error.message);
   }
 }
 
@@ -177,7 +172,7 @@ async function insertConsumer(username,fullname, address, contactinfo,connection
 async function getUsers(username, password,connection) {
   try {
     const connection = await pool.getConnection();
-    const [rows] = await connection.execute('SELECT Username, Password FROM User WHERE Username = ? AND Password = ?;', [username, password]);
+    const [rows] = await connection.execute('SELECT Username, Password,UserType FROM User WHERE Username = ? AND Password = ?;', [username, password]);
     connection.release();
     return rows;
   } catch (error) {

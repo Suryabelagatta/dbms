@@ -33,6 +33,8 @@ CREATE TABLE Product (
     FOREIGN KEY (FarmerID) REFERENCES Farmer(FarmerID)
 );
 
+
+
 -- Consumer table
 CREATE TABLE Consumer (
     ConsumerID INT PRIMARY KEY,
@@ -102,3 +104,12 @@ INSERT INTO User (UserID, Username, Password, Email, UserType, RegistrationDate)
 (101, 'farmer1', 'password1', 'john@example.com', 'Farmer', '2023-01-15'),
 (102, 'farmer2', 'password2', 'mary@example.com', 'Farmer', '2023-02-20'),
 (103, 'consumer1', 'password3', 'jane@example.com', 'Consumer', '2023-03-25');
+
+INSERT INTO Product (ProductID, FarmerID, ProductName, Description, Price, QuantityAvailable, Images) VALUES 
+    (1, 121, 'Apples', 'Fresh organic apples', 5.99, 100, 'apples.jpg'),
+    (2, 125, 'Oranges', 'Juicy oranges', 4.49, 150, 'oranges.jpg'),
+    (3, 127, 'Bananas', 'Ripe bananas', 3.99, 200, 'bananas.jpg'),
+    (4, 135, 'Strawberries', 'Delicious strawberries', 6.99, 80, 'strawberries.jpg'),
+    (5, 139, 'Tomatoes', 'Organic tomatoes', 2.99, 120, 'tomatoes.jpg'),
+    (6, 139, 'groundnut', 'Fresh groundnut', 5.99, 100, 'groundnut.jpg'),
+    (7, 140, 'Capsicum', 'Juicy capcicum', 4.49, 150, 'capsicum.jpg');
