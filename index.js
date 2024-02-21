@@ -47,6 +47,11 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname,'static_files', 'register.html'));
 });
 
+// Set up route for the root path '/'
+app.get('/farmer', (req, res) => {
+  res.sendFile(path.join(__dirname,'static_files', 'farmer.html'));
+});
+
 // Express route to handle registration
 app.post('/register', async (req, res) => {
   try {
@@ -92,6 +97,56 @@ app.get('/products', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// API endpoint to fetch data for a specific farmer
+// app.post('/farmer', async (req, res) => {
+//   const farmerId = parseInt(req.body.farmerId);
+//   //console.log(farmerId);
+//   try {
+//     // Call the asynchronous function to fetch data for the farmer
+//     const farmerData = await fetchDataForFarmer(farmerId);
+//     // Send the obtained farmer data as a JSON response
+//     res.json(farmerData);
+//   } catch (error) {
+//     // If an error occurs, send an error response
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
+// API endpoint to fetch data for a specific farmer
+app.get('/farmer/:id', async (req, res) => {
+  const farmerId = parseInt(req.params.id);
+
+  try {
+    // Call the asynchronous function to fetch data for the farmer
+    const farmerData = await fetchDataForFarmer(farmerId);
+
+    // Send the obtained farmer data as a JSON response
+    res.json(farmerData);
+  } catch (error) {
+    // If an error occurs, send an error response
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+async function fetchDataForFarmer(farmerId) {
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.execute(
+      `SELECT Farmer.FarmName, Product.ProductName, Product.QuantityAvailable, Review.Comments, Product.Description
+      FROM Product
+      JOIN Farmer ON Product.FarmerID = Farmer.FarmerID
+      LEFT JOIN Review ON Product.ProductID = Review.ProductID
+      WHERE Farmer.FarmerID = ?`,
+      [farmerId]
+    );
+    connection.release();
+    return rows;
+  } catch (error) {
+    throw new Error('Error fetching data: ' + error.message);
+  }
+}
 
 
 // Function to retrieve all products asynchronously
