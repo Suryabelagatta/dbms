@@ -1,5 +1,5 @@
 angular.module('loginApp', [])
-.controller('loginController', function($scope, $http) {
+.controller('loginController',  ['$scope', '$http', '$location', '$window', function($scope, $http, $location, $window){
     $scope.formData = {};
     $scope.message = '';
 
@@ -8,6 +8,10 @@ angular.module('loginApp', [])
         .then(function(response) {
             if (response.data.valid) {
                 $scope.message = 'Login successful';
+                console.log(response.data.UserType)
+                if(response.data.UserType=="Consumer"){
+                    $window.location.href = '/consumer';
+                }
             } else {
                 $scope.message = 'Invalid username or password';
             }
@@ -17,5 +21,5 @@ angular.module('loginApp', [])
             console.error('Error:', error);
         });
     };
-});
+}]);
 
