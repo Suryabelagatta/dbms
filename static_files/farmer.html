@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="farmerApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Farmer's Homepage</title>
+    <link rel="stylesheet" href="farmer.css">
+</head>
+<body ng-controller="farmerController">
+
+<div class="header">
+    <h1>Welcome, {{ farmerProducts[0].FarmName }}</h1>
+    <p>Location: {{ farmerProducts[0].Location }}</p>
+    <p>Contact: {{ farmerProducts[0].ContactInfo }}</p>
+</div>
+
+<div class="products-container">
+    <h2>Your Products</h2>
+    <div class="product" ng-repeat="product in farmerProducts">
+        <div class="product-details">
+            <h3>{{ product.ProductName }}</h3>
+            <p>Quantity Available: {{ product.QuantityAvailable }}</p>
+            <p>Description: {{ product.Description }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- AngularJS script -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="farmer.js"></script>
+</body>
+</html>

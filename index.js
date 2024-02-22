@@ -15,6 +15,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'static_files', 'index.html'));
 });
 
+app.get('/consumer', (req, res) => {
+  res.sendFile(path.join(__dirname, 'static_files', 'product.html'));
+});
+
 app.post('/validate', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -32,7 +36,7 @@ app.post('/validate', async (req, res) => {
     }
 
     if (rows[0].Password==password) {
-      res.json({ valid: true });
+      res.json({ valid: true, UserType:rows[0].UserType, UserId:rows[0].UserID});
     } else {
       res.json({ valid: false });
     }
@@ -47,10 +51,10 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname,'static_files', 'register.html'));
 });
 
-// Set up route for the root path '/'
-app.get('/farmer', (req, res) => {
-  res.sendFile(path.join(__dirname,'static_files', 'farmer.html'));
-});
+// // Set up route for the root path '/'
+// app.get('/farmer', (req, res) => {
+//   res.sendFile(path.join(__dirname,'static_files', 'farmer.html'));
+// });
 
 // Express route to handle registration
 app.post('/register', async (req, res) => {
@@ -98,20 +102,7 @@ app.get('/products', async (req, res) => {
   }
 });
 
-// API endpoint to fetch data for a specific farmer
-// app.post('/farmer', async (req, res) => {
-//   const farmerId = parseInt(req.body.farmerId);
-//   //console.log(farmerId);
-//   try {
-//     // Call the asynchronous function to fetch data for the farmer
-//     const farmerData = await fetchDataForFarmer(farmerId);
-//     // Send the obtained farmer data as a JSON response
-//     res.json(farmerData);
-//   } catch (error) {
-//     // If an error occurs, send an error response
-//     res.status(500).json({ error: error.message });
-//   }
-// });
+
 
 // API endpoint to fetch data for a specific farmer
 app.get('/farmer/:id', async (req, res) => {
@@ -120,7 +111,7 @@ app.get('/farmer/:id', async (req, res) => {
   try {
     // Call the asynchronous function to fetch data for the farmer
     const farmerData = await fetchDataForFarmer(farmerId);
-
+    console.log(farmerData);
     // Send the obtained farmer data as a JSON response
     res.json(farmerData);
   } catch (error) {
@@ -134,7 +125,7 @@ async function fetchDataForFarmer(farmerId) {
   try {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute(
-      `SELECT Farmer.FarmName, Product.ProductName, Product.QuantityAvailable, Review.Comments, Product.Description
+      `SELECT Farmer.FarmName,Farmer.Location,Farmer.ContactInfo, Product.ProductName, Product.QuantityAvailable, Review.Comments, Product.Description
       FROM Product
       JOIN Farmer ON Product.FarmerID = Farmer.FarmerID
       LEFT JOIN Review ON Product.ProductID = Review.ProductID
@@ -223,7 +214,7 @@ async function insertConsumer(username,fullname, address, contactinfo,connection
 async function getUsers(username, password,connection) {
   try {
     const connection = await pool.getConnection();
-    const [rows] = await connection.execute('SELECT Username, Password FROM User WHERE Username = ? AND Password = ?;', [username, password]);
+    const [rows] = await connection.execute('SELECT UserID,Username, Password,UserType FROM User WHERE Username = ? AND Password = ?;', [username, password]);
     connection.release();
     return rows;
   } catch (error) {
