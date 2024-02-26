@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Details</title>
+    <link rel="stylesheet" type="text/css" href="productinfo.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="ProductController">
+
+    <h1>Product Details</h1>
+
+    <div ng-if="loading">Loading...</div>
+
+    <div ng-if="error">{{ error }}</div>
+
+    <div ng-if="product">
+        <h2>{{ product.ProductName }}</h2>
+        <p><strong>Description:</strong> {{ product.Description }}</p>
+        <p><strong>Price:</strong> {{ product.Price }}</p>
+        <p><strong>Quantity Available:</strong> {{ product.QuantityAvailable }}</p>
+    </div>
+
+    <script src="productinfo.js"></script>
+
+</body>
+</html>

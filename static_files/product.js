@@ -17,6 +17,8 @@ angular.module('productApp', [])
     // Function to redirect to product details page
     $scope.redirectToDetails = function(productId) {
         // Redirect to details page with product ID
-        $window.location.href = '/products/' + productId;
+        var url = '/productinfo.html?productId=' + encodeURIComponent(productId);
+$window.location.href = url;
+
     };
 }]);

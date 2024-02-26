@@ -121,6 +121,41 @@ app.get('/farmer/:id', async (req, res) => {
 });
 
 
+
+// Define a route to handle product requests
+app.get('/product/:productId', async (req, res) => {
+  const productId = req.params.productId;
+
+  try {
+    // Acquire a connection from the pool
+    const connection = await pool.getConnection();
+    
+    // Query to fetch product details based on ProductID
+    const query = 'SELECT ProductID, ProductName, Description, Price, QuantityAvailable FROM product WHERE ProductID = ?';
+
+    // Execute the query
+    const [rows] = await connection.query(query, [productId]);
+    
+    // Release the connection back to the pool
+    connection.release();
+
+    // Check if the product exists
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Return the product details
+    console.log(rows[0])
+    return res.json(rows[0]);
+
+  } catch (error) {
+    console.error('Error fetching product details:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
 async function fetchDataForFarmer(farmerId) {
   try {
     const connection = await pool.getConnection();
@@ -182,6 +217,12 @@ async function insertUser(username, password, email,userType,connection) {
       }
   }
 }
+
+
+
+
+
+
 
 async function insertFarmer(username,fullname, location, contactinfo, description,connection) {
   try {
