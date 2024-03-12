@@ -33,8 +33,6 @@ CREATE TABLE Product (
     FOREIGN KEY (FarmerID) REFERENCES Farmer(FarmerID)
 );
 
-
-
 -- Consumer table
 CREATE TABLE Consumer (
     ConsumerID INT PRIMARY KEY,
@@ -47,45 +45,15 @@ CREATE TABLE Consumer (
 
 -- Order table
 CREATE TABLE Orders (
-    OrderID INT PRIMARY KEY,
+    OrderID INT AUTO_INCREMENT PRIMARY KEY,
     ConsumerID INT,
     OrderDate DATE,
     TotalAmount DECIMAL(10, 2),
     OrderStatus VARCHAR(20),
-    FOREIGN KEY (ConsumerID) REFERENCES Consumer(ConsumerID)
-);
-
--- OrderItem table
-CREATE TABLE OrderItem (
-    OrderItemID INT PRIMARY KEY,
-    OrderID INT,
     ProductID INT,
     Quantity INT,
-    Subtotal DECIMAL(10, 2),
-    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (ConsumerID) REFERENCES User(UserID),
     FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
-);
-
-
-CREATE TABLE Review (
-    ReviewID INT PRIMARY KEY,
-    ProductID INT,
-    ConsumerID INT,
-    Rating INT,
-    Comments TEXT,
-    Timestamp TIMESTAMP,
-    FOREIGN KEY (ProductID) REFERENCES Product(ProductID),
-    FOREIGN KEY (ConsumerID) REFERENCES Consumer(ConsumerID)
-);
-
-CREATE TABLE Message (
-    MessageID INT PRIMARY KEY,
-    SenderID INT,
-    ReceiverID INT,
-    Content TEXT,
-    Timestamp TIMESTAMP,
-    FOREIGN KEY (SenderID) REFERENCES User(UserID),
-    FOREIGN KEY (ReceiverID) REFERENCES User(UserID)
 );
 
 
@@ -113,3 +81,66 @@ INSERT INTO Product (ProductID, FarmerID, ProductName, Description, Price, Quant
     (5, 139, 'Tomatoes', 'Organic tomatoes', 2.99, 120, 'tomatoes.jpg'),
     (6, 139, 'groundnut', 'Fresh groundnut', 5.99, 100, 'groundnut.jpg'),
     (7, 140, 'Capsicum', 'Juicy capcicum', 4.49, 150, 'capsicum.jpg');
+
+--updating farmer table
+ALTER TABLE Farmer
+ADD COLUMN TotalBalance DECIMAL(10, 2) DEFAULT 0.00;
+
+--triggers for updating farmer table
+DELIMITER //
+CREATE TRIGGER update_farmer_balance
+AFTER INSERT ON Orders
+FOR EACH ROW
+BEGIN
+    DECLARE farmer_id INT;
+    DECLARE payment_amount DECIMAL(10, 2);
+    DECLARE current_balance DECIMAL(10, 2);
+    
+    -- Get the farmer ID and payment amount for the inserted row
+    SELECT p.FarmerID, o.TotalAmount
+    INTO farmer_id,payment_amount
+    FROM Orders o
+    JOIN Product p ON o.ProductID = p.ProductID
+    WHERE o.OrderID = (SELECT OrderID FROM Orders ORDER BY OrderID DESC LIMIT 1);
+
+    -- Get the current balance of the farmer
+    SELECT TotalBalance INTO current_balance
+    FROM Farmer
+    WHERE FarmerID = farmer_id;
+
+    -- Calculate the new balance
+    SET current_balance = current_balance + payment_amount;
+
+    -- Update the TotalBalance in the Farmer table
+    UPDATE Farmer
+    SET TotalBalance = current_balance
+    WHERE FarmerID = farmer_id;
+END;
+//
+DELIMITER ;
+
+
+--triggers for updating the product table
+DELIMITER //
+
+CREATE TRIGGER update_product_quantity
+AFTER UPDATE ON Orders
+FOR EACH ROW
+BEGIN
+    DECLARE new_quantity INT;
+    DECLARE product_id INT;
+
+    IF NEW.Quantity <> OLD.Quantity THEN
+        SET new_quantity = NEW.Quantity - OLD.Quantity;
+        SET product_id = NEW.ProductID;
+
+        UPDATE Product
+        SET QuantityAvailable = QuantityAvailable - new_quantity
+        WHERE ProductID = product_id;
+    END IF;
+END//
+
+DELIMITER ;
+
+
+

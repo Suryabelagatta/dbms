@@ -1,5 +1,4 @@
-// Import mysql2 library
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 // Create a connection pool
 const pool = mysql.createPool({
@@ -8,5 +7,6 @@ const pool = mysql.createPool({
     password: 'Sudipta@2003',
     database: 'AgricultureDB'
 });
+
 // Export the pool for shared use in other modules
 module.exports = pool;

@@ -8,17 +8,38 @@
 </head>
 <body ng-controller="ProductController">
 
-    <h1>Product Details</h1>
-
-    <div ng-if="loading">Loading...</div>
-
-    <div ng-if="error">{{ error }}</div>
-
-    <div ng-if="product">
-        <h2>{{ product.ProductName }}</h2>
+    <div class="product-details">
+        <h1>{{ product.ProductName }}</h1>
+        <div class="image-container">
+            <img ng-src="{{ product.Images }}" alt="{{ product.ProductName }}">
+        </div>
         <p><strong>Description:</strong> {{ product.Description }}</p>
-        <p><strong>Price:</strong> {{ product.Price }}</p>
+        <p><strong>Price: $</strong> {{ product.Price }}</p>
         <p><strong>Quantity Available:</strong> {{ product.QuantityAvailable }}</p>
+
+        <!-- Buy Button -->
+        <button ng-click="showBuyForm = true" ng-show="!showBuyForm">Buy</button>
+
+        <!-- Buy Form -->
+        <form class="buy-form" ng-show="showBuyForm" ng-submit="buyed(product)">
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" ng-model="order.quantity" min="1" max="{{ product.QuantityAvailable }}" ng-change="calculateTotal()" required>
+            </div>
+            <div class="form-group">
+                <label for="totalAmount">Total Amount: ${{ order.totalAmount }}</label>
+            </div>
+            <div class="form-group">
+                <label>Payment Method:</label>
+                <div>
+                    <label><input type="radio" ng-model="order.paymentMethod" ng-value="'Cash'" ng-required="!order.paymentMethod"> Cash</label>
+                    <label><input type="radio" ng-model="order.paymentMethod" ng-value="'Card'" ng-required="!order.paymentMethod"> Card</label>
+                </div>
+                
+            </div>
+            <button type="submit">Confirm Purchase</button>
+        </form>
+        <div class="message" ng-show="message">{{ message }}</div>
     </div>
 
     <script src="productinfo.js"></script>

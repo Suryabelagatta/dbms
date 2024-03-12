@@ -11,6 +11,7 @@
     <h1>Welcome, {{ farmerProducts[0].FarmName }}</h1>
     <p>Location: {{ farmerProducts[0].Location }}</p>
     <p>Contact: {{ farmerProducts[0].ContactInfo }}</p>
+    <p>Total Sales: &#8377;{{farmerProducts[0].TotalBalance}}</p>
 </div>
 
 <div class="products-container">
@@ -22,6 +23,37 @@
             <p>Description: {{ product.Description }}</p>
         </div>
     </div>
+</div>
+
+<button ng-click="showAddProductForm()" ng-show="!showForm">Add Product</button>
+
+<!-- Form to add a new product -->
+<div class="add-product-form" ng-show="showForm">
+    <h2>Add New Product</h2>
+    <form ng-submit="addProduct()">
+        <div class="form-group">
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" ng-model="newProduct.name" required>
+        </div>
+        <div class="form-group">
+            <label for="productDescription">Description:</label>
+            <textarea id="productDescription" ng-model="newProduct.description" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="productPrice">Price:</label>
+            <input type="number" id="productPrice" ng-model="newProduct.price" required>
+        </div>
+        <div class="form-group">
+            <label for="quantityAvailable">Quantity Available:</label>
+            <input type="number" id="quantityAvailable" ng-model="newProduct.quantity" required>
+        </div>
+        <div class="form-group">
+            <label for="productImage">Image:</label>
+            <input type="text" id="productImage" ng-model="newProduct.image" required>
+        </div>
+        <button ng-click="showAddProductForm()" type="submit">Add Product</button>
+    </form>
+    <div class="success-message" ng-show="successMessage">{{ successMessage }}</div>
 </div>
 
 <!-- AngularJS script -->
