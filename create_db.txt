@@ -1,6 +1,6 @@
 -- CREATE database
 CREATE DATABASE AgricultureDB;
-USE AgricultureDBSx;
+USE AgricultureDB;
 
 -- User table
 CREATE TABLE User (
