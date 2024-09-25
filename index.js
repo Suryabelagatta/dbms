@@ -237,13 +237,7 @@ async function fetchDataForFarmer(farmerId) {
   try {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute(
-      `SELECT Farmer.FarmName, Farmer.Location, Farmer.ContactInfo, Farmer.TotalBalance,Product.ProductName, 
-      Product.QuantityAvailable, Review.Comments, Product.Description
-FROM Farmer
-LEFT JOIN Product ON Farmer.FarmerID = Product.FarmerID
-LEFT JOIN Review ON Product.ProductID = Review.ProductID
-WHERE Farmer.FarmerID = ?;`,
-      [farmerId]
+      "SELECT Farmer.FarmName, Farmer.Location, Farmer.ContactInfo, Farmer.TotalBalance,Product.ProductName, Product.QuantityAvailable, Product.Description FROM Farmer LEFT JOIN Product ON Farmer.FarmerID = Product.FarmerID WHERE Farmer.FarmerID = ?;",[farmerId]
     );
     connection.release();
     return rows;
