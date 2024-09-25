@@ -1,6 +1,10 @@
+-- CREATE database
+CREATE DATABASE AgricultureDB;
+USE AgricultureDBSx;
+
 -- User table
 CREATE TABLE User (
-    UserID INT PRIMARY KEY,
+    UserID INT AUTO_INCREMENT PRIMARY KEY,
     Username VARCHAR(50) UNIQUE,
     Password VARCHAR(255),
     Email VARCHAR(100),
@@ -58,7 +62,7 @@ CREATE TABLE Orders (
 
 
 CREATE TABLE Payment (
-    PaymentID INT PRIMARY KEY,
+    PaymentID INT AUTO_INCREMENT PRIMARY KEY,
     OrderID INT,
     Amount DECIMAL(10, 2),
     PaymentMethod VARCHAR(50),
@@ -71,22 +75,38 @@ CREATE TABLE Payment (
 INSERT INTO User (UserID, Username, Password, Email, UserType, RegistrationDate) VALUES
 (101, 'farmer1', 'password1', 'john@example.com', 'Farmer', '2023-01-15'),
 (102, 'farmer2', 'password2', 'mary@example.com', 'Farmer', '2023-02-20'),
-(103, 'consumer1', 'password3', 'jane@example.com', 'Consumer', '2023-03-25');
+(103, 'consumer1', 'password3', 'jane@example.com', 'Consumer', '2023-03-25'),
+(104, 'farmer3', 'password4', 'david@example.com', 'Farmer', '2023-04-01'),
+(105, 'consumer2', 'password5', 'emily@example.com', 'Consumer', '2023-05-10'),
+(106, 'consumer3', 'password6', 'mike@example.com', 'Consumer', '2023-06-15');
+
+-- Inserting data into the Farmer table
+INSERT INTO Farmer (FarmerID, UserID, FarmName, Location, ContactInfo, Description) VALUES
+(101, 101, 'Green Valley Farm', 'California', '123-456-7890', 'Organic farming of fruits and vegetables'),
+(102, 102, 'Sunshine Farm', 'Texas', '987-654-3210', 'Specializes in citrus fruits'),
+(104, 104, 'Blue Sky Farm', 'Florida', '321-654-0987', 'Growing organic vegetables and herbs');
+
+-- Inserting data into the Consumer table
+INSERT INTO Consumer (ConsumerID, UserID, FullName, Address, ContactInfo) VALUES
+(103, 103, 'Jane Doe', '123 Elm Street, NY', '555-123-4567'),
+(105, 105, 'Emily Smith', '456 Maple Street, TX', '555-987-6543'),
+(106, 106, 'Mike Johnson', '789 Oak Street, CA', '555-789-1234');
+
 
 INSERT INTO Product (ProductID, FarmerID, ProductName, Description, Price, QuantityAvailable, Images) VALUES 
-    (1, 121, 'Apples', 'Fresh organic apples', 5.99, 100, 'apples.jpg'),
-    (2, 125, 'Oranges', 'Juicy oranges', 4.49, 150, 'oranges.jpg'),
-    (3, 127, 'Bananas', 'Ripe bananas', 3.99, 200, 'bananas.jpg'),
-    (4, 135, 'Strawberries', 'Delicious strawberries', 6.99, 80, 'strawberries.jpg'),
-    (5, 139, 'Tomatoes', 'Organic tomatoes', 2.99, 120, 'tomatoes.jpg'),
-    (6, 139, 'groundnut', 'Fresh groundnut', 5.99, 100, 'groundnut.jpg'),
-    (7, 140, 'Capsicum', 'Juicy capcicum', 4.49, 150, 'capsicum.jpg');
+    (1010, 101, 'Apples', 'Fresh organic apples', 5.99, 100, 'apple.jpg'),
+    (1011, 101, 'Oranges', 'Juicy oranges', 4.49, 150, 'orange.jpg'),
+    (1020, 102, 'Bananas', 'Ripe bananas', 3.99, 200, 'banana.jpg'),
+    (1021, 102, 'Strawberries', 'Delicious strawberries', 6.99, 80, 'strawberry.jpg'),
+    (1040, 104, 'Tomatoes', 'Organic tomatoes', 2.99, 120, 'tomato.jpg'),
+    (1041, 104, 'groundnut', 'Fresh groundnut', 5.99, 100, 'groundnut.jpg'),
+    (1012, 101, 'Capsicum', 'Juicy capcicum', 4.49, 150, 'capsicum.jpg');
 
---updating farmer table
+-- updating farmer table
 ALTER TABLE Farmer
 ADD COLUMN TotalBalance DECIMAL(10, 2) DEFAULT 0.00;
 
---triggers for updating farmer table
+-- triggers for updating farmer table
 DELIMITER //
 CREATE TRIGGER update_farmer_balance
 AFTER INSERT ON Orders
@@ -120,7 +140,7 @@ END;
 DELIMITER ;
 
 
---triggers for updating the product table
+-- triggers for updating the product table
 DELIMITER //
 
 CREATE TRIGGER update_product_quantity
@@ -141,6 +161,3 @@ BEGIN
 END//
 
 DELIMITER ;
-
-
-
